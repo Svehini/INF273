@@ -4,7 +4,24 @@ from infoGetter import *
 import random
 
 
-def listShuffler(numOfVehicles, numOfCalls):
+# If a car is assigned to a package they cant pick up and deliver the package will be assigned to outsourcing instead
+def vibeChecker(shuffledSol, vehicleCapabilities, numOfVehicles):
+    vehicleNum = 0
+    for num in range(numOfVehicles-1):
+        for package in shuffledSol[num]:
+            if package not in vehicleCapabilities[vehicleNum]:
+                shuffledSol[num].remove(package)
+                if len(shuffledSol) < numOfVehicles:
+                    shuffledSol.append([package])
+                else:
+                    shuffledSol[vehicleNum].append(package)
+        numOfVehicles += 1
+    return shuffledSol
+
+
+# MAKE A SHUFFLER THAT EVENLY DISTRIBUTES THE CALLS AMONG THE VEHICLES
+# MAYBE ALSO SORT CALLS AFTER EARLIST UB DELIVERY TIME (?)
+def listShuffler(numOfVehicles, numOfCalls, vehicleCapabilities):
     solRep = []
     for i in range(numOfVehicles):
         solRep.append(0)
@@ -22,6 +39,7 @@ def listShuffler(numOfVehicles, numOfCalls):
     if tempList != []:
         shuffledSol.append(tempList)
     solRep = []
+    shuffledSol = vibeChecker(shuffledSol, vehicleCapabilities, numOfVehicles)
     for i in range(len(shuffledSol)):
         tempList =[]
         for j in shuffledSol[i]:
@@ -45,11 +63,14 @@ def randoFunc(filePath, data, repeats):
 
     numOfVehicles = data['NumOfVehicles']
     numOfCalls = data["NumOfCalls"]
+    vehicleCapabilities = data["VehicleCapabilities"]
+
+
     initSol = initialSolution(numOfVehicles, numOfCalls)
     initSum = costFinder(initSol, data)
     bestSolution = "Nan"
     for i in range(0, repeats):                              # Change to 10 000
-        solRep = listShuffler(numOfVehicles, numOfCalls)
+        solRep = listShuffler(numOfVehicles, numOfCalls, vehicleCapabilities)
         checked, totalSum = feasChecker(solRep, data)
         if checked == True:
             totalSum += costFinder(solRep, data)
