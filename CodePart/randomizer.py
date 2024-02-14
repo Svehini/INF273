@@ -81,6 +81,6 @@ def randoFunc(filePath, data, repeats):
                 bestSolution = totalSum
                 theSolution = solRep
     if bestSolution != "Nan":
-        return bestSolution, initSum
+        return bestSolution, initSum, theSolution
     else: 
-        return "Nan", initSum
+        return "Nan", initSum, "Nan"
