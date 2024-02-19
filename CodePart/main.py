@@ -9,7 +9,9 @@ files = ['Call_7_Vehicle_3.txt', 'Call_18_Vehicle_5.txt', 'Call_35_Vehicle_7.txt
 
 # files = ['Call_7_Vehicle_3.txt', 'Call_18_Vehicle_5.txt']
 
-allObjectives = {}; allTimes = {}; allInitCosts = []; actualSolutions = {}
+# files =  ['Call_35_Vehicle_7.txt']
+
+allObjectives = {}; allTimes = {}; allInitCosts = {}; actualSolutions = {}
 numSol = []
 repeats = 10000
 rounds = 10
@@ -17,7 +19,7 @@ for runde in range(rounds):
     roundScore = []
     for filename in files:
         start = time.time()
-        filePath = os.getcwd() + '/Assignment 2/test_cases/' + filename
+        filePath = os.getcwd() + '/CodePart/test_cases/' + filename
         data = problemData(filePath)
         bestSolution, initCost, theSolution = randoFunc(filePath, data, repeats)
         end = time.time()
@@ -33,9 +35,8 @@ for runde in range(rounds):
         improvement = (f"Improvement: {imp}%\n")
         roundScore.append(line); roundScore.append(probInfo); roundScore.append(initSol); 
         roundScore.append(improvement); roundScore.append(timeUsed); roundScore.append(line); roundScore.append("\n")
-        if runde == 1:
-            allInitCosts.append(initCost)
 
+        allInitCosts[filename] = initCost
         if filename not in allObjectives.keys():
             if bestSolution != "Nan":
                 allObjectives[filename] = [bestSolution]
@@ -75,11 +76,11 @@ bestImps = []
 actualSolutionsList = []
 
 for key, value in allObjectives.items():
-    avgObjectives.append(f"problem: {key}\nAverage best cost: {sum(value)/10}\nBest objective: {min(value)}\n")
-    thisInitCost = allInitCosts.pop(0)
+    avgObjectives.append(f"problem: {key}\nAverage best cost: {sum(value)/rounds}\nBest objective: {min(value)}\n")
+    thisInitCost = allInitCosts[key]
     bestImps.append(f"Best improvement is: {round((100*(thisInitCost-min(value)) / thisInitCost), 4)}%\n\n")
 for key, value in allTimes.items():
-    avgTimes.append(f"Average time is: {sum(value)/10}\n")
+    avgTimes.append(f"Average time is: {sum(value)/rounds}\n")
 for key, value in actualSolutions.items():
     actualSolutionsList.append(f"Actual Solution: {value}\n\n")
 

@@ -24,15 +24,11 @@ def costFinder(solution, data):
             if (vehicleNum+1) > numOfVehicles:
                 break
     covered = []
+    # print(solution)
     for outsourced in solution[i+1:]:
         if outsourced not in covered:
             covered.append(outsourced)
-            # print(outsourced)
-            # print(callPenalty[outsourced-1])
             totalCost += callPenalty[outsourced-1]
+            # print(totalCost)
             
     return totalCost
-
-
-
-sol = [0, 2, 2, 0, 1, 5, 5, 3, 1, 3, 0, 7, 4, 6, 7, 4, 6]

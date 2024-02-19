@@ -16,23 +16,6 @@ def feasChecker(solution, data):
     vehicleCapabilities = data["VehicleCapabilities"]
     travelTimeAndCost = data["Travel Time and Cost"]
     dockingCostAndTime = data["Docking Cost and Time"]
-
-
-    # # This tests for validity, which when I run my randomizer, doesnt need to be used
-    # solCopy = solution
-    # solCopyDict = {}
-    # for i in solCopy:
-    #     if i != 0:
-    #         if i not in solCopyDict.keys():
-    #             solCopyDict[i] = 1
-    #         elif solCopyDict[i] < 2:
-    #             solCopyDict[i] = solCopyDict[i]+1
-    #         else:
-    #             # print(f"There is more than two mentions of item {i}")
-    #             return False, 0
-    # if len(solCopyDict.keys())*2 != sum(solCopyDict.values()):
-    #     # print(f"There is not an equal amount of pickups and deliveries!!")
-    #     return False, 0
     
 
     pickedUp = []
