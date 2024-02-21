@@ -3,8 +3,6 @@ from feasabilityChecker import *
 from totalCost import *
 from infoGetter import *
 from operatorFunc import *
-import random 
-import time
 
 def initialSolution(numOfVehicles, numOfCalls):
     initSol = []

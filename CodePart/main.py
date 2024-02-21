@@ -12,7 +12,8 @@ from runner import *
 files = ['Call_7_Vehicle_3.txt']
 
 # type = "Random"
-type = "Local"
+# type = "Local"
+type = "SimAnn"
 
 repeats = 10000
 rounds = 10
