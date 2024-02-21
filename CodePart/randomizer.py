@@ -2,6 +2,7 @@ from feasabilityChecker import *
 from totalCost import *
 from infoGetter import *
 import random
+import time
 
 
 # If a car is assigned to a package they cant pick up and deliver the package will be assigned to outsourcing instead
@@ -79,7 +80,7 @@ def randoFunc(filePath, data, repeats):
     bestSolution = "Nan"
     for i in range(0, repeats):                              # Change to 10 000
         solRep = listShuffler(numOfVehicles, numOfCalls, vehicleCapabilities)
-        # solRep = [30, 30, 0, 0, 32, 32, 0, 7, 7, 28, 28, 0, 0, 0, 0, 14, 10, 16, 26, 6, 34, 35, 11, 24, 13, 10, 23, 3, 2, 18, 35, 5, 33, 22, 15, 17, 23, 11, 29, 6, 33, 14, 4, 12, 34, 24, 16, 21, 3, 18, 25, 15, 20, 1, 27, 25, 22, 9, 12, 9, 13, 8, 17, 29, 5, 2, 26, 1, 8, 20, 4, 21, 27, 19, 19, 0, 31, 31, 0]
+        solRep = [0, 0, 6, 6, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 7, 7]
         checked, totalSum = feasChecker(solRep, data)
         if checked == True:
             totalSum += costFinder(solRep, data)
