@@ -47,8 +47,10 @@ def simulatedAnnealingFunc(filename, data, repeats):
                     incubentSum = newSolSum
                     incubentSol = newSolution
                 deltaAvg.append(delE)
-
-    deltaAvg = sum(deltaAvg) / len(deltaAvg)
+    if deltaAvg != []:
+        deltaAvg = sum(deltaAvg) / len(deltaAvg)
+    else:
+        deltaAvg = initSum/20
     startTemp = (-deltaAvg) / math.log(0.8)
     alpha = (0.1/startTemp) ** (1/9900)
     temp = startTemp
