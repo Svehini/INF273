@@ -9,27 +9,12 @@ def reInsert(currentSol, data):
 
     whichToSwitch = rd.randint(1,numOfCalls)
 
-    # This codeblock removes the given call which is just randomized at this point
-    tempList = []
-    shuffledSol = []
-    for i in currentSol:
-        if i == 0:
-            shuffledSol.append(tempList)
-            tempList = []
-        else:
-            tempList.append(i)
-    if tempList != []:
-        shuffledSol.append(tempList)
-    elif currentSol[-1] == 0:
-        shuffledSol.append([])
-    for l in range(len(shuffledSol)):
-        if whichToSwitch in shuffledSol[l]:
-            shuffledSol[l].remove(whichToSwitch)
-            shuffledSol[l].remove(whichToSwitch)
+    for oldCar in range(len(currentSol)):
+        if whichToSwitch in currentSol[oldCar]:
+            currentSol[oldCar].remove(whichToSwitch)
+            currentSol[oldCar].remove(whichToSwitch)
             break
 
-    # This block makes a list of all capable cars for this package to be sent to
-    # Now this also removes the car num (FYI)
     capableCars = []
     for capability in vehicleCapabilities:
         carNum = capability[0]
@@ -38,18 +23,12 @@ def reInsert(currentSol, data):
     capableCars.append(numOfVehicles)
     rd.shuffle(capableCars)
     newCar = capableCars[0]
-    if newCar == l:
+    if newCar == oldCar:
         try:
             newCar = capableCars[1]
         except:
             ...
-    spots = len(shuffledSol[newCar])
-    shuffledSol[newCar].insert((rd.randint(0,spots)), whichToSwitch)
-    shuffledSol[newCar].insert((rd.randint(0,spots+1)), whichToSwitch)
-
-    # This part adds back the 0´s in the list
-    for i in range(len(shuffledSol)):
-        if i != numOfVehicles:
-            shuffledSol[i].append(0)
-    newSol = sum(shuffledSol, [])
-    return newSol
+    spots = len(currentSol[newCar])
+    currentSol[newCar].insert((rd.randint(0,spots)), whichToSwitch)
+    currentSol[newCar].insert((rd.randint(0,spots+1)), whichToSwitch)
+    return currentSol, oldCar, newCar
