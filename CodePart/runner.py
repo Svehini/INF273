@@ -14,9 +14,25 @@ def runnerFunc(files, rounds, repeats, type):
     for runde in range(rounds):
         roundScore = []
         for filename in files:
-            start = time.time()
             filePath = os.getcwd() + '/CodePart/test_cases/' + filename
             data = problemData(filePath)
+
+            numOfVehicles = data['NumOfVehicles']
+            numOfNodes = data['NumOfNodes']
+            numOfCalls = data["NumOfCalls"]
+            vehicleCapacity = data["VehicleCapacity"]
+            vehicleStartingTime = data["VehicleStartingTime"]
+            vehicleStartingNode = data["VehicleStartingNode"]
+            callOrigin = data["CallOrigin"]
+            calldestination = data["CallDestination"]
+            callSize = data["CallSize"]
+            callPickupTimes = data["CallPickUpTimes"]
+            callDeliveryTimes = data["CallDeliveryTimes"]
+            vehicleCapabilities = data["VehicleCapabilities"]
+            travelTimeAndCost = data["Travel Time and Cost"]
+            dockingCostAndTime = data["Docking Cost and Time"]
+            
+            start = time.time()
             if type == "Random":
                 bestSolution, initCost, theSolution = randoFunc(filePath, data, repeats)
             elif type == "Local":

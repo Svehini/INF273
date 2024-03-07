@@ -1,7 +1,6 @@
 
 from feasabilityChecker import *
 from totalCost import *
-from infoGetter import *
 from operatorFunc import *
 from feasCheckForOneCar import *
 import copy
@@ -22,36 +21,40 @@ def initialSolution(numOfVehicles, numOfCalls):
 def localSearchFunc(filename, data, repeats):
     numOfVehicles = data['NumOfVehicles']
     numOfCalls = data["NumOfCalls"]
+    callPenalty = data["CallPenalty"]
 
     initSol, bestCosts = initialSolution(numOfVehicles, numOfCalls)
-    initSum = costFinder(initSol, data)
+    initSum = costFinder(initSol, callPenalty)
 
     bestSolution = initSol
     bestSum = initSum
     bestCosts[-1] = initSum
 
     for i in range(repeats):
-        checkedAdd = False
-        checkedRev = False
-        newSol, carRev, carAdd = reInsert(copy.deepcopy(bestSolution), data)
-        if carAdd < (numOfVehicles):
-            checkedAdd, carAddSol = oneCarFeasChecker(carAdd, newSol[carAdd], data)
-        else:
-            carAddSol = costFinder(newSol, data)
-            checkedAdd = True
+        newCosts = []
+        newSolValid = True
+        
+        newSol, changedCars = reInsert(copy.deepcopy(bestSolution), data)
+        newSolSum = bestSum
 
-        if carRev < (numOfVehicles):
-            checkedRev, carRevSol = oneCarFeasChecker(carRev, newSol[carRev], data)
-        else:
-            carRevSol = costFinder(newSol, data)
-            checkedRev = True
+        # This iterates through the cars that has been changed in the operator and updates the costs
+        for car in changedCars:
+            newSolSum -= bestCosts[car]
+            if car < numOfVehicles:
+                newCarChecked, newCarPrice = oneCarFeasChecker(car, newSol[car], data)
+                if not newCarChecked:
+                    newSolValid = False
+                    break
+            else:
+                newCarPrice = costFinder(newSol, callPenalty)
+            newSolSum += newCarPrice
+            newCosts.append(newCarPrice)
 
-        if (checkedAdd == True) and (checkedRev == True):
-            newSolSum = bestSum - bestCosts[carAdd] - bestCosts[carRev] + carAddSol + carRevSol
+        if newSolValid:
             if (newSolSum < bestSum):
-                bestCosts[carAdd] = carAddSol
-                bestCosts[carRev] = carRevSol
-                bestSum = sum(bestCosts)
+                for car in changedCars:
+                    bestCosts[car] = newCosts.pop(0)
+                bestSum = newSolSum
                 bestSolution = copy.deepcopy(newSol)
     
     for i in range(len(bestSolution)-1):
@@ -59,4 +62,5 @@ def localSearchFunc(filename, data, repeats):
         appCar.append(0)
         bestSolution[i] = appCar
     return bestSum, initSum, sum(bestSolution, [])
+
 

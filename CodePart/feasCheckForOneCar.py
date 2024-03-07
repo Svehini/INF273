@@ -1,4 +1,4 @@
-from infoGetter import *
+# from infoGetter import *
 
 def oneCarFeasChecker(carNum, pickedUpItems, data):
     numOfVehicles = data['NumOfVehicles']

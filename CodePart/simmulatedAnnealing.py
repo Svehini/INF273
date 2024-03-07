@@ -25,9 +25,10 @@ def initialSolution(numOfVehicles, numOfCalls):
 def simulatedAnnealingFunc(filename, data, repeats):
     numOfVehicles = data['NumOfVehicles']
     numOfCalls = data["NumOfCalls"]
+    callPenalty = data['CallPenalty']
 
     initSol, bestCosts = initialSolution(numOfVehicles, numOfCalls)
-    initSum = costFinder(initSol, data)
+    initSum = costFinder(initSol, callPenalty)
 
     bestSolution = initSol
     bestSum = initSum
@@ -38,31 +39,46 @@ def simulatedAnnealingFunc(filename, data, repeats):
 
     LowestTemperature = 0.1
     deltaAvg = []
+    # operators = [reInsert, outsourcedReInsert, shuffler]
+    # chances = [0.3, 0.30, 0.1]
+    allOperators = [reInsert, outsourcedReInsert, shuffler, smartSorter, reInsertWithShuffle, reverser, twoOpt]
+    operators = [reInsert, outsourcedReInsert, shuffler, smartSorter]
+    chances = [0.35, 0.75, 0, 0.2]
 
     for i in range(100):
-        checkedAdd = False
-        checkedRev = False
-        newSol, carRev, carAdd = reInsert(copy.deepcopy(incubentSol), data)
-        if carAdd < (numOfVehicles):
-            checkedAdd, carAddSol = oneCarFeasChecker(carAdd, newSol[carAdd], data)
-        else:
-            carAddSol = costFinder(newSol, data)
-            checkedAdd = True
+        newCosts = []
+        newSolValid = True
+        newSolSum = incubentSum
 
-        if carRev < (numOfVehicles):
-            checkedRev, carRevSol = oneCarFeasChecker(carRev, newSol[carRev], data)
-        else:
-            carRevSol = costFinder(newSol, data)
-            checkedRev = True
+        # This is with equal weights
+        # rd.shuffle(operators)
+        # newSol, changedCars = operators[0](copy.deepcopy(incubentSol), data)
 
-        if (checkedAdd == True) and (checkedRev == True):
-            newSolSum = incubentSum - bestCosts[carAdd] - bestCosts[carRev] + carAddSol + carRevSol
+        # This is with whifted weight
+        chosenOp = rd.choices(operators, chances)[0]
+        newSol, changedCars = chosenOp(copy.deepcopy(incubentSol), data)
+        # newSol, changedCars = smartSorter(copy.deepcopy(incubentSol), data)
+
+        # This iterates through the cars that has been changed in the operator and updates the costs
+        for car in changedCars:
+            newSolSum -= bestCosts[car]
+            if car < numOfVehicles:
+                newCarChecked, newCarPrice = oneCarFeasChecker(car, newSol[car], data)
+                if not newCarChecked:
+                    newSolValid = False
+                    break
+            else:
+                newCarPrice = costFinder(newSol, callPenalty)
+            newSolSum += newCarPrice
+            newCosts.append(newCarPrice)
+
+        if newSolValid:
             delE = newSolSum - incubentSum
             if delE < 0:
                 incubentSum = newSolSum
                 incubentSol = copy.deepcopy(newSol)
-                bestCosts[carAdd] = carAddSol
-                bestCosts[carRev] = carRevSol
+                for car in changedCars:
+                    bestCosts[car] = newCosts.pop(0)
                 if incubentSum < bestSum:
                     bestSum = newSolSum
                     bestSolution = copy.deepcopy(newSol)
@@ -70,8 +86,8 @@ def simulatedAnnealingFunc(filename, data, repeats):
                 if rd.random() < 0.8:
                     incubentSum = newSolSum
                     incubentSol = copy.deepcopy(newSol)
-                    bestCosts[carAdd] = carAddSol
-                    bestCosts[carRev] = carRevSol
+                    for car in changedCars:
+                        bestCosts[car] = newCosts.pop(0)
                 deltaAvg.append(delE)
     if deltaAvg != []:
         deltaAvg = sum(deltaAvg) / len(deltaAvg)
@@ -84,25 +100,39 @@ def simulatedAnnealingFunc(filename, data, repeats):
     for i in range(9900):
         if temp < LowestTemperature:
             break
-        newSol, carRev, carAdd = reInsert(copy.deepcopy(incubentSol), data)
-        if carAdd < (numOfVehicles):
-            checkedAdd, carAddSol = oneCarFeasChecker(carAdd, newSol[carAdd], data)
-        else:
-            carAddSol = costFinder(newSol, data)
-            checkedAdd = True
-        if carRev < (numOfVehicles):
-            checkedRev, carRevSol = oneCarFeasChecker(carRev, newSol[carRev], data)
-        else:
-            carRevSol = costFinder(newSol, data)
-            checkedRev = True
-        if (checkedAdd == True) and (checkedRev == True):
-            newSolSum = incubentSum - bestCosts[carAdd] - bestCosts[carRev] + carAddSol + carRevSol
+        newCosts = []
+        newSolValid = True
+        newSolSum = incubentSum
+
+
+        # This is with equal weights
+        # rd.shuffle(operators)
+        # newSol, changedCars = operators[0](copy.deepcopy(incubentSol), data)
+
+        # This is with whifted weight
+        chosenOp = rd.choices(operators, chances)[0]
+        newSol, changedCars = chosenOp(copy.deepcopy(incubentSol), data)
+
+        # This iterates through the cars that has been changed in the operator and updates the costs
+        for car in changedCars:
+            newSolSum -= bestCosts[car]
+            if car < numOfVehicles:
+                newCarChecked, newCarPrice = oneCarFeasChecker(car, newSol[car], data)
+                if not newCarChecked:
+                    newSolValid = False
+                    break
+            else:
+                newCarPrice = costFinder(newSol, callPenalty)
+            newSolSum += newCarPrice
+            newCosts.append(newCarPrice)
+
+        if newSolValid:
             delE = newSolSum - incubentSum
             if delE < 0:
                 incubentSum = newSolSum
                 incubentSol = copy.deepcopy(newSol)
-                bestCosts[carAdd] = carAddSol
-                bestCosts[carRev] = carRevSol
+                for car in changedCars:
+                    bestCosts[car] = newCosts.pop(0)
                 if incubentSum < bestSum:
                     bestSum = newSolSum
                     bestSolution = copy.deepcopy(newSol)
@@ -111,8 +141,8 @@ def simulatedAnnealingFunc(filename, data, repeats):
                 if rd.random() < p:
                     incubentSum = newSolSum
                     incubentSol = copy.deepcopy(newSol)
-                    bestCosts[carAdd] = carAddSol
-                    bestCosts[carRev] = carRevSol
+                    for car in changedCars:
+                        bestCosts[car] = newCosts.pop(0)
         temp = alpha * temp
     for i in range(len(bestSolution)-1):
         appCar = bestSolution[i]
